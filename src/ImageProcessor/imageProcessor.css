@@ -1,0 +1,17 @@
+.checkboxes {
+	display: flex;
+	flex-direction: column;
+	margin-top: 1.5rem;
+}
+
+.swaper__page {
+	margin-top: 6rem;
+	display: none;
+}
+
+.swaper__buttons {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 1.5rem;
+}
