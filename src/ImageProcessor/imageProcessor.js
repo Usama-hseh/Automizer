@@ -121,8 +121,7 @@ async function swaperPage(executeModel, core, app, fs, psAction) {
 		if (fold) {
 			const entries = await fold.getEntries();
 			srcPathTokken = [];
-			const imgFiles = entries.filter(entry => entry.isFile && (entry.name.endsWith(".png") || entry.name.endsWith(".jpg") || entry.name.endsWith(".jpeg")));
-			
+			const imgFiles = entries.filter(entry => entry.isFile && (entry.name.endsWith(".png") || entry.name.endsWith(".jpg") || entry.name.endsWith(".jpeg")));		
 			srcPathTokken = imgFiles.map((imgEntry) => {
 				return {
 					name: imgEntry.name,
@@ -150,7 +149,7 @@ async function swaperPage(executeModel, core, app, fs, psAction) {
 				img.onerror = (error) => {
 					console.error('Image load error:', error);
 				};
-				img.src = imagePath.path; // Set image source
+				img.src = imagePath.token; // Set image source
 	
 				const cardText = document.createElement('div');
 				cardText.classList.add('card-text');
@@ -247,39 +246,6 @@ async function swaperPage(executeModel, core, app, fs, psAction) {
 		applyFontSizeToFitLayer(textLayer.bounds.width, textLayer.bounds.height, textArray);
 	}
 
-	async function applyFontSizeToFitLayer(layerWidth, layerHeight, arr) {
-
-
-		let wqt = new Date();
-		let snapAbra = "ABRA " + wqt.getMilliseconds() + Math.random() * 9999;
-
-		createSnapShot(snapAbra);
-
-		for (let index = 0; index < arr.length; index++) {
-			const sentence = arr[index];
-			let sent_withewLines = String(sentence).replace(/\n/g, "");
-
-			//	await executeModel({ contents: sentence });
-			await core.executeAsModal(async () => {
-				layerText.characterStyle.font = selectedFont;
-				if (blackText === true) {
-					layerText.characterStyle.color = blackColor;
-				} else {
-					layerText.characterStyle.color = whiteColor;
-				}
-				return (layerText.contents = sent_withewLines);
-			}, {});
-
-			await ScaleTextToFitBox(textLayer);
-
-			// textLayer.document.saveAs.jpg();
-			let filenameFinal = `${index + 1}`;
-			await savePNG(outPathToken, filenameFinal);
-
-			loadSnapShot(snapAbra);
-		}
-		createDialog('Process Completed');
-	}
 
 	addOptions(swapperFontDropdown, fontsArray);
 }
