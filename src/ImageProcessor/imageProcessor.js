@@ -1,8 +1,14 @@
 async function swaperPage(executeModel, core, app, fs, psAction) {
 	const SolidColor = require('photoshop').app.SolidColor;
 
-	const swaperPage = document.getElementById('swaperPage');
-	const textPage = document.getElementById('textPage');
+
+	const pluginsPage = document.getElementById("pluginsPage");
+	const swaperPage = document.getElementById("swaperPage");
+	const textPage = document.getElementById("textPage");
+	const textPagebtn = document.getElementById("converterButton");
+	const processImgbtn = document.getElementById("processImageButton");
+	const imagesDiv = document.getElementById("imagesDiv");
+
 	const swaperToggleButton = document.getElementById('swaperToggleButton');
 	const textToggleButton = document.getElementById('textToggleButton');
 	const swapperFontDropdown = document.getElementById('swapperFontDropdown');
@@ -12,12 +18,26 @@ async function swaperPage(executeModel, core, app, fs, psAction) {
 	const swaperSubmit = document.getElementById('swaperSubmit');
 	const swaperResetBtn = document.getElementById('swaperResetBtn');
 	const checkboxError = document.getElementById('checkboxError');
-	const outFoldBtnSwp = document.getElementById('outFoldBtnSwp');
+	const srcFoldBtnSwp = document.getElementById('srcFoldBtnSwp');
 	const outFoldPathSwp = document.getElementById('outFoldPathSwp');
 	const colorBlkSwp = document.getElementById('colorBlkSwp');
 	const colorWhiteSwp = document.getElementById('colorWhiteSwp');
 
 	const { createDialog } = require('../../dialog/dialog.js');
+
+
+	processImgbtn.addEventListener("click", () => {
+		pluginsPage.style.display = 'none';
+		swaperPage.style.display = 'block';
+		// pluginsError.style.display = 'none';
+		// footerContainer.style.display = 'none';
+		// pluginsPage.style.display = 'none';
+	})
+
+
+
+
+
 
 	let createFolderPath = '';
 	let outPathToken = {};
@@ -54,14 +74,96 @@ async function swaperPage(executeModel, core, app, fs, psAction) {
 	// 	return;
 	// }
 
+	/*
 	async function browseFolder() {
 		let fold = await fs.getFolder();
 		if (fold) {
+			const entries = await fold.getEntries();
+			srcPathTokken = []; // cso that if previously files are procesed that are removed
+			const imgfiles = entries.filter(entry => entry.isFile && entry.name.endsWith(".png") || entry.name.endsWith(".jpg") || entry.name.endsWith(".jpeg"));
+			srcPathTokken = imgfiles.map((imgEntry) => {
+				return {
+					name: imgEntry.name,
+					path: imgEntry.nativePath,
+					token: fs.createSessionToken(imgEntry)
+				}
+			})
 			outPathToken = fold;
-			outFoldPathSwp.innerText = fold.nativePath;
+			outFoldPathSwp.innerText = `File Selected : ${srcPathTokken.length}` //fold.nativePath;
+
+		//	const srcPathTokken = ['image1.jpg', 'image2.jpg', 'image3.jpg']; // Example array of image paths
+			//const imagesDiv = document.getElementById('imagesDiv');
+			srcPathTokken.forEach(imagePath => {
+				const card = document.createElement('div');
+				card.classList.add('card');
+
+				const img = document.createElement('img');
+				img.src = imagePath.path;
+				img.alt = 'Image Name';
+
+				const cardText = document.createElement('div');
+				cardText.classList.add('card-text');
+				cardText.textContent = 'Image Name';
+
+				card.appendChild(img);
+				card.appendChild(cardText);
+				imagesDiv.appendChild(card);
+			});
+		}
+
+
+
+	}
+	*/
+	
+	async function browseFolder() {
+		let fold = await fs.getFolder();
+		if (fold) {
+			const entries = await fold.getEntries();
+			srcPathTokken = [];
+			const imgFiles = entries.filter(entry => entry.isFile && (entry.name.endsWith(".png") || entry.name.endsWith(".jpg") || entry.name.endsWith(".jpeg")));
+			
+			srcPathTokken = imgFiles.map((imgEntry) => {
+				return {
+					name: imgEntry.name,
+					path: imgEntry.nativePath,
+					token: fs.createSessionToken(imgEntry)
+				};
+			});
+	
+			outPathToken = fold;
+			outFoldPathSwp.innerText = `Files Selected: ${srcPathTokken.length}`;
+	
+			const imagesDiv = document.getElementById('imagesDiv');
+			imagesDiv.innerHTML = ''; // Clear previous content if any
+	
+			srcPathTokken.forEach(imagePath => {
+				const card = document.createElement('div');
+				card.classList.add('card');
+	
+				const img = document.createElement('img');
+				img.alt = 'Image';
+				img.onload = () => {
+					// Once image is loaded, append it to the card
+					card.appendChild(img);
+				};
+				img.onerror = (error) => {
+					console.error('Image load error:', error);
+				};
+				img.src = imagePath.path; // Set image source
+	
+				const cardText = document.createElement('div');
+				cardText.classList.add('card-text');
+				cardText.textContent = imagePath.name; // Display image name
+	
+				card.appendChild(img);
+				card.appendChild(cardText);
+				imagesDiv.appendChild(card);
+			});
 		}
 	}
-	outFoldBtnSwp.addEventListener('click', browseFolder);
+	
+	srcFoldBtnSwp.addEventListener('click', browseFolder);
 
 	selectFileSwaper.addEventListener('click', async () => {
 		swaperTextPath.innerText = 'No file selected';
@@ -146,7 +248,7 @@ async function swaperPage(executeModel, core, app, fs, psAction) {
 	}
 
 	async function applyFontSizeToFitLayer(layerWidth, layerHeight, arr) {
-		
+
 
 		let wqt = new Date();
 		let snapAbra = "ABRA " + wqt.getMilliseconds() + Math.random() * 9999;
@@ -223,156 +325,8 @@ async function selectLayer(lyrId) {
 	);
 }
 
-async function ScaleTextToFitBox(textLayer) {
-	// if (!textLayer.isParagraphText) {
-	//   await alert("Text layer type is not Paragraph...");
-	//   return;
-	// }
 
-	let fitInsideBoxDimensions = getLayerDimensions(textLayer);
 
-	let textLayerHeight = await getRealTextLayerDimensions(textLayer);
-	console.log(textLayerHeight);
-	while (fitInsideBoxDimensions.height < textLayerHeight) {
-		let fontSize = parseInt(textLayer.textItem.characterStyle.size);
-		core.executeAsModal(() => {
-			return (textLayer.textItem.characterStyle.size = fontSize * 0.95);
-		}, {});
-		console.log(fontSize * 0.95);
-		await selectLayer(textLayer.id);
-		textLayerHeight = await getRealTextLayerDimensions(textLayer);
-	}
-}
-
-/***dependency ScaleTextToFitBox****/
-async function getRealTextLayerDimensions(textLayer) {
-	let textLayerCopy;
-	await core.executeAsModal(async () => {
-		return (textLayerCopy = await textLayer.duplicate());
-	}, {});
-	await selectLayer(textLayerCopy.id);
-	let horiz = Math.floor(
-		(app.activeDocument.activeLayers[0].bounds.left / app.activeDocument.width) * 100,
-	);
-	let wi = app.activeDocument.activeLayers[0].bounds.width;
-	await changeTextBounds(wi, horiz);
-
-	await core.executeAsModal(
-		async () => {
-			await textLayerCopy.rasterize();
-		},
-		{ commandName: 'rasterize layer' },
-	);
-
-	const dimensions = getLayerDimensions(textLayerCopy);
-
-	await core.executeAsModal(async () => {
-		return textLayerCopy.delete();
-	}, {});
-
-	return dimensions.height;
-}
-/***dependency ScaleTextToFitBox****/
-function getLayerDimensions(layer) {
-	return {
-		width: layer.bounds.width,
-		height: layer.bounds.height,
-	};
-}
-
-async function changeTextBounds(wi, horiz) {
-	const batchCommands = {
-		_obj: 'set',
-		_target: [
-			{
-				_ref: 'textLayer',
-				_enum: 'ordinal',
-				_value: 'targetEnum',
-			},
-		],
-		to: {
-			_obj: 'textLayer',
-			textClickPoint: {
-				_obj: 'paint',
-				horizontal: {
-					_unit: 'percentUnit',
-					_value: Number(horiz),
-				},
-				vertical: {
-					_unit: 'percentUnit',
-					_value: 0,
-				},
-			},
-
-			orientation: {
-				_enum: 'orientation',
-				_value: 'horizontal',
-			},
-
-			textShape: [
-				{
-					_obj: 'textShape',
-					char: {
-						_enum: 'char',
-						_value: 'box',
-					},
-					orientation: {
-						_enum: 'orientation',
-						_value: 'horizontal',
-					},
-					transform: {
-						_obj: 'transform',
-						xx: 1,
-						xy: 0,
-						yx: 0,
-						yy: 1,
-						tx: 0,
-						ty: 0,
-					},
-					rowCount: 1,
-					columnCount: 1,
-					rowMajorOrder: true,
-					rowGutter: {
-						_unit: 'pixelsUnit',
-						_value: 0,
-					},
-					columnGutter: {
-						_unit: 'pixelsUnit',
-						_value: 0,
-					},
-					spacing: {
-						_unit: 'pixelsUnit',
-						_value: 0,
-					},
-					frameBaselineAlignment: {
-						_enum: 'frameBaselineAlignment',
-						_value: 'alignByAscent',
-					},
-					firstBaselineMinimum: {
-						_unit: 'pixelsUnit',
-						_value: 0,
-					},
-					bounds: {
-						_obj: 'rectangle',
-						top: 0,
-						left: 0,
-						bottom: Number(app.activeDocument.height * (72 / app.activeDocument.resolution)),
-						right: Number(wi * (72 / app.activeDocument.resolution)),
-					},
-				},
-			],
-		},
-		_options: {
-			dialogOptions: 'dontDisplay',
-		},
-	};
-	return await core.executeAsModal(
-		async () => {
-			await psAction.batchPlay([batchCommands], { synchronousExecution: false });
-		},
-		{ commandName: 'make rectangle Shape' },
-	);
-}
 async function savePNG(outToken, fileName) {
 	var finalFile = await outToken.createFile(fileName, { overwrite: true });
 
@@ -382,74 +336,53 @@ async function savePNG(outToken, fileName) {
 }
 async function createSnapShot(nm) {
 	await core.executeAsModal(
-	  async () => {
-		return await psAction.batchPlay(
-		  [
-			{
-			  _obj: "make",
-			  _target: [
-				{
-				  _ref: "snapshotClass",
-				},
-			  ],
-			  name: nm,
-			  from: {
-				_ref: "historyState",
-				_property: "currentHistoryState",
-			  },
-			  _options: {
-				dialogOptions: "dontDisplay",
-			  },
-			},
-		  ],
-		  {}
-		);
-	  },
-	  { commandName: "Create Snapshot" }
+		async () => {
+			return await psAction.batchPlay(
+				[
+					{
+						_obj: "make",
+						_target: [
+							{
+								_ref: "snapshotClass",
+							},
+						],
+						name: nm,
+						from: {
+							_ref: "historyState",
+							_property: "currentHistoryState",
+						},
+						_options: {
+							dialogOptions: "dontDisplay",
+						},
+					},
+				],
+				{}
+			);
+		},
+		{ commandName: "Create Snapshot" }
 	);
-  }
-  async function loadSnapShot(nm) {
+}
+async function loadSnapShot(nm) {
 	await core.executeAsModal(
-	  async () => {
-		return await psAction.batchPlay(
-		  [
-			{
-			  _obj: "select",
-			  _target: [
-				{
-				  _ref: "snapshotClass",
-				  _name: nm,
-				},
-			  ],
-			  _options: {
-				dialogOptions: "dontDisplay",
-			  },
-			},
-		  ],
-		  {}
-		);
-	  },
-	  { commandName: "Create Snapshot" }
+		async () => {
+			return await psAction.batchPlay(
+				[
+					{
+						_obj: "select",
+						_target: [
+							{
+								_ref: "snapshotClass",
+								_name: nm,
+							},
+						],
+						_options: {
+							dialogOptions: "dontDisplay",
+						},
+					},
+				],
+				{}
+			);
+		},
+		{ commandName: "Create Snapshot" }
 	);
-  }
-
-  async function converBitMode(value) {
-	await core.executeAsModal(
-	  async () => {
-		return await psAction.batchPlay(
-		  [
-			{
-				_obj: "convertMode",
-				depth: Number(value),
-				merge: false,
-				_options: {
-				   dialogOptions: "dontDisplay"
-				}
-			 }
-		  ],
-		  {}
-		);
-	  },
-	  { commandName: "Convert Document Mode" }
-	);
-  }
+}

@@ -15,7 +15,7 @@
 					<img src="./icons/logo-podwizz.png" width="175px" alt="logo" />
 				</div>
 				<sp-detail style="font-size: 0.8rem"
-					>Sample text about your Plugin - Automizer.</sp-detail
+					>Sample text about your Plugin - Automizer</sp-detail
 				>
 				<div class="plugins__button">
 					<sp-button variant="primary">Automizer Website Link!</sp-button>
@@ -25,7 +25,7 @@
 			<div style="margin-top: 5.5rem" class="plugins__group">
 				<!-- <sp-heading class="plugins__heading">Automizer</sp-heading> -->
 				<div id="selecFoldBtn"><sp-detail id="foldPath" style="cursor: pointer;">Select Folder</sp-detail></div>
-				<sp-button id="loginButton" class="plugins__login">Process Images</sp-button>
+				<sp-button id="processImageButton" class="plugins__login">Process Images</sp-button>
 				<sp-button id="converterButton" style="background-color: blueviolet;" class="plugins__login">Image Converter</sp-button>
 				<sp-detail id="pluginsError" class="plugins__error"
 					>Invalid email. <br />Error Msg Logs Here.</sp-detail
@@ -33,55 +33,10 @@
 			</div>
 		</div>
 
-		<div class="toggle" id="togglePlugins">
-			<sp-button
-				id="swaperToggleButton"
-				variant="primary"
-				style="width: 100%; background-color: var(--text); color: var(--background)"
-				>ABRA</sp-button
-			>
-			<sp-button
-				id="textToggleButton"
-				variant="primary"
-				style="
-					width: 100%;
-					margin-top: 10px;
-					background-color: var(--background);
-					color: var(--text);
-				"
-				>CADABRA</sp-button
-			>
-		</div>
-
 		<div class="swaper__page" id="swaperPage">
-			<sp-action-button style="width: 100%; cursor: pointer" id="selectFileSwaper">
-				<div slot="icon" style="fill: currentColor">
-					<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 18 18" width="18">
-						<defs>
-							<style>
-								.fill {
-									fill: #464646;
-								}
-							</style>
-						</defs>
-						<title>S FileFolder 18 N</title>
-						<rect id="Canvas" fill="#ff13dc" opacity="0" width="18" height="18" />
-						<polygon class="fill" points="10 1 10 6 15 6 10 1" />
-						<path
-							class="fill"
-							d="M9,16.75V11.5A1.5,1.5,0,0,1,10.5,10h2.293a1.491,1.491,0,0,1,1.0605.4395L15,11.586V7H9.5A.5.5,0,0,1,9,6.5V1H3.5a.5.5,0,0,0-.5.5v15a.5.5,0,0,0,.5.5H9.05A1.19238,1.19238,0,0,1,9,16.75Z" />
-						<path
-							class="fill"
-							d="M16.75,17h-6.5a.25.25,0,0,1-.25-.25V13h6.75a.25.25,0,0,1,.25.25v3.5A.25.25,0,0,1,16.75,17ZM14,12l-.8535-.8535A.5.5,0,0,0,12.793,11H10.5a.5.5,0,0,0-.5.5V12Z" />
-					</svg>
-				</div>
-				Select Input File
-			</sp-action-button>
-			<sp-detail style="margin-bottom: .5rem" id="swaperTextPath">No File Selected</sp-detail>
 
 
-
-			<sp-action-button style="width: 100%; cursor: pointer" id="outFoldBtnSwp">
+			<sp-action-button style="width: 100%; cursor: pointer" id="srcFoldBtnSwp">
 				<div slot="icon" style="fill: currentColor">
 					<svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 18 18" width="18">
 						<defs>
@@ -98,40 +53,23 @@
 							d="M16.5,4l-7.166.004-1.65-1.7A1,1,0,0,0,6.9645,2H2A1,1,0,0,0,1,3V14.5a.5.5,0,0,0,.5.5h15a.5.5,0,0,0,.5-.5V4.5A.5.5,0,0,0,16.5,4ZM2,3H6.9645L8.908,5H2Z" />
 					</svg>
 				</div>
-				Output Folder
+				Select Source Folder
 			</sp-action-button>
 			<sp-detail style="margin-bottom: 1.5rem" id="outFoldPathSwp">No Folder Selected</sp-detail>
-
-
-			<sp-picker
-				placeholder="Make a selection..."
-				style="width: 100%; cursor: pointer"
-				id="fontDropdown">
-				<sp-label
-					isrequired="true"
-					style="width: 20rem; color: inherit"
-					for="fontDropdown"
-					slot="label"
-					>Select Font</sp-label
-				>
-				<sp-menu slot="options" id="swapperFontDropdown"> </sp-menu>
-			</sp-picker>
-			<sp-detail style="margin-top: 0.2rem; color: red; display: none" id="fontError"
-				>* Please select a font</sp-detail
-			>
-
-			<div class="checkboxes">
-				<sp-checkbox id="colorBlkSwp">Create text in black color</sp-checkbox>
-				<sp-checkbox id="colorWhiteSwp">Create text in white color</sp-checkbox>
+			<div >
+				<sp-checkbox id="colorBlkSwp">Option 1</sp-checkbox>
+				<sp-checkbox id="colorWhiteSwp">Option 2</sp-checkbox>
 			</div>
 			<sp-detail style="margin-top: 0.2rem; color: red; display: none" id="checkboxError"
 				>* Please choose white or black text checkbox (only one)</sp-detail
 			>
 
+			<div id="imagesDiv"></div>
+
 			<div class="swaper__buttons">
 				<sp-button id="swaperSubmit">Ok</sp-button>
 				<sp-button id="swaperResetBtn" variant="primary" style="margin-left: 0.5rem"
-					>Reset Values</sp-button
+					>Go Back</sp-button
 				>
 			</div>
 		</div>
@@ -224,7 +162,7 @@
 			>
 			<div class="swaper__buttons">
 				<sp-button id="ok__textBtn">Ok</sp-button>
-				<sp-button variant="primary" style="margin-left: 0.5rem" id="textResetBtn">Reset Values</sp-button>
+				<sp-button variant="primary" style="margin-left: 0.5rem" id="textResetBtn">Go Back</sp-button>
 			</div>
 		</div>
 
